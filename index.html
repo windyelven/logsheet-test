@@ -25,13 +25,23 @@
         content: document.getElementById('content').value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbzW_mgfVzUi3BysRo_zziCgiCZkVVlonTdMB90I4Mnrpx95T4iyBgdOul06OHqj8DJLhA/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
+     fetch("https://script.google.com/macros/s/AKfycbzW_mgfVzUi3BysRo_zziCgiCZkVVlonTdMB90I4Mnrpx95T4iyBgdOul06OHqj8DJLhA/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)
+})
+.then(res => {
+  console.log("Status code:", res.status);
+  return res.text();
+})
+.then(response => {
+  alert("✅ 回應：" + response);
+})
+.catch(error => {
+  console.error("錯誤：", error);
+  alert("❌ 發生錯誤：" + error.message);
+});
+
       .then(res => res.text())
       .then(response => alert("✅ 送出成功：" + response))
       .catch(error => alert("❌ 發生錯誤：" + error));
