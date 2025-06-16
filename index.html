@@ -1,45 +1,40 @@
+
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>工作日誌填寫表單</title>
+  <title>填寫工作日誌</title>
   <style>
     body {
+      background-color: #1c1c1c;
+      color: #f0c040;
       font-family: sans-serif;
-      background-color: #1e1e1e;
-      color: #ffd700;
-      padding: 2rem;
+      padding: 2em;
     }
     input, textarea, button {
-      display: block;
       width: 100%;
-      margin: 1rem 0;
-      padding: 0.5rem;
-      border-radius: 5px;
+      margin: 0.5em 0;
+      padding: 0.5em;
       border: none;
-      font-size: 1rem;
+      border-radius: 5px;
     }
     button {
-      background-color: #ffd700;
-      color: #1e1e1e;
+      background-color: #f0c040;
+      color: #1c1c1c;
       font-weight: bold;
-      cursor: pointer;
     }
     #responseMsg {
-      margin-top: 1rem;
+      margin-top: 1em;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>📝 工作日誌填寫</h1>
+  <h1>填寫工作日誌</h1>
   <form id="logForm">
-    <label>姓名：</label>
-    <input type="text" id="name" required>
-    <label>日期：</label>
-    <input type="date" id="date" required>
-    <label>工作內容：</label>
-    <textarea id="content" rows="5" required></textarea>
+    姓名：<input type="text" id="name" required><br>
+    日期：<input type="date" id="date" required><br>
+    工作內容：<textarea id="content" rows="5" required></textarea><br>
     <button type="submit">送出</button>
   </form>
   <div id="responseMsg"></div>
@@ -54,17 +49,19 @@
         content: document.getElementById('content').value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbyZ0MN2Hoe6cq9JbnDRFmpv8pbAgJxDCjbSKqOgjYJxUMY_OYw2htFeKiF8wyhXgmPc/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyWXD8q_VHTUR2PhJc1mF0meCF8BBDEia4MQczPRjVzY3jGIPiyU7rD3JNpkJa7YI-xVQ/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       })
       .then(res => {
-        if (!res.ok) throw new Error("伺服器錯誤：" + res.status);
-        return res.text();
+        if (!res.ok) {
+          throw new Error("伺服器回應錯誤：" + res.status);
+        }
+        return res.json();
       })
       .then(response => {
-        document.getElementById('responseMsg').textContent = "✅ 成功送出！伺服器回應：" + response;
+        document.getElementById('responseMsg').textContent = "✅ 送出成功：" + JSON.stringify(response);
       })
       .catch(error => {
         document.getElementById('responseMsg').textContent = "❌ 發生錯誤：" + error.message;
