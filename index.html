@@ -3,22 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <title>工作日誌填寫表單</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #1e1e1e;
+      color: #ffd700;
+      padding: 2rem;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #ffd700;
+      color: #1e1e1e;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #responseMsg {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h2>填寫工作日誌</h2>
+  <h1>📝 工作日誌填寫</h1>
   <form id="logForm">
-    姓名：<input type="text" id="name"><br><br>
-    日期：<input type="date" id="date"><br><br>
-    工作內容：<br>
-    <textarea id="content" rows="5" cols="40"></textarea><br><br>
+    <label>姓名：</label>
+    <input type="text" id="name" required>
+    <label>日期：</label>
+    <input type="date" id="date" required>
+    <label>工作內容：</label>
+    <textarea id="content" rows="5" required></textarea>
     <button type="submit">送出</button>
   </form>
-
-  <p id="responseMsg" style="color: green;"></p>
+  <div id="responseMsg"></div>
 
   <script>
-    const form = document.getElementById('logForm');
-    form.addEventListener('submit', function (e) {
+    document.getElementById('logForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
       const data = {
@@ -27,21 +54,19 @@
         content: document.getElementById('content').value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbz9DB0Pq-6QusY-ITNgNHVzHSHLqgbeGjfvluzpn7dgivDIccTEaZqEAkYsRf2ajk-ZsA/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyZ0MN2Hoe6cq9JbnDRFmpv8pbAgJxDCjbSKqOgjYJxUMY_OYw2htFeKiF8wyhXgmPc/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       })
       .then(res => {
-        console.log("Status code:", res.status);
+        if (!res.ok) throw new Error("伺服器錯誤：" + res.status);
         return res.text();
       })
       .then(response => {
-        console.log("回應內容：", response);
-        document.getElementById('responseMsg').textContent = "✅ 送出成功：" + response;
+        document.getElementById('responseMsg').textContent = "✅ 成功送出！伺服器回應：" + response;
       })
       .catch(error => {
-        console.error("錯誤：", error);
         document.getElementById('responseMsg').textContent = "❌ 發生錯誤：" + error.message;
       });
     });
