@@ -14,6 +14,8 @@
     <button type="submit">送出</button>
   </form>
 
+  <p id="responseMsg" style="color: green;"></p>
+
   <script>
     const form = document.getElementById('logForm');
     form.addEventListener('submit', function (e) {
@@ -25,26 +27,23 @@
         content: document.getElementById('content').value
       };
 
-     fetch("https://script.google.com/macros/s/AKfycbzW_mgfVzUi3BysRo_zziCgiCZkVVlonTdMB90I4Mnrpx95T4iyBgdOul06OHqj8DJLhA/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data)
-})
-.then(res => {
-  console.log("Status code:", res.status);
-  return res.text();
-})
-.then(response => {
-  alert("✅ 回應：" + response);
-})
-.catch(error => {
-  console.error("錯誤：", error);
-  alert("❌ 發生錯誤：" + error.message);
-});
-
-      .then(res => res.text())
-      .then(response => alert("✅ 送出成功：" + response))
-      .catch(error => alert("❌ 發生錯誤：" + error));
+      fetch("https://script.google.com/macros/s/AKfycbzW_mgfVzUi3BysRo_zziCgiCZkVVlonTdMB90I4Mnrpx95T4iyBgdOul06OHqj8DJLhA/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(res => {
+        console.log("Status code:", res.status);
+        return res.text();
+      })
+      .then(response => {
+        console.log("回應內容：", response);
+        document.getElementById('responseMsg').textContent = "✅ 送出成功：" + response;
+      })
+      .catch(error => {
+        console.error("錯誤：", error);
+        document.getElementById('responseMsg').textContent = "❌ 發生錯誤：" + error.message;
+      });
     });
   </script>
 </body>
