@@ -1,72 +1,235 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>填寫工作日誌</title>
-  <style>
-    body {
-      background-color: #1c1c1c;
-      color: #f0c040;
-      font-family: sans-serif;
-      padding: 2em;
-    }
-    input, textarea, button {
-      width: 100%;
-      margin: 0.5em 0;
-      padding: 0.5em;
-      border: none;
-      border-radius: 5px;
-    }
-    button {
-      background-color: #f0c040;
-      color: #1c1c1c;
-      font-weight: bold;
-    }
-    #responseMsg {
-      margin-top: 1em;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大地質感工作日誌</title>
+    <style>
+        /* 大地色系背景 */
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #e6d5c3 0%, #c5b097 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* 80% 透明度玻璃面板 */
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #5c4a3c;
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #6e5a4b;
+            font-size: 15px;
+        }
+
+        /* 輸入框與大地色系邊框 */
+        input[type="date"], input[type="text"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d3c2b0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #4a3c31;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #8c7355;
+            box-shadow: 0 0 8px rgba(140, 115, 85, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 90px;
+        }
+
+        /* 按鈕基本樣式 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.1s ease;
+            box-sizing: border-box;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        /* 50% 肉感按鈕：飽滿的圓角與Q彈陰影，按下去有踩肉墊的下沉感 */
+        .btn-submit {
+            background-color: #8c7355;
+            border-radius: 12px;
+            box-shadow: 0 6px 0px #5c4a3c, 0 8px 15px rgba(0, 0, 0, 0.15);
+            margin-bottom: 15px;
+        }
+
+        .btn-submit:hover {
+            background-color: #9c8466;
+        }
+
+        .btn-submit:active {
+            box-shadow: 0 2px 0px #5c4a3c, 0 3px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(4px);
+        }
+
+        /* 大地色系讀取條按鈕狀態 */
+        .btn-submit.loading {
+            background-color: #bfae99 !important;
+            box-shadow: 0 2px 0px #8c7355 !important;
+            transform: translateY(4px);
+            cursor: not-allowed;
+        }
+
+        /* 調閱之前資料按鈕：次要大地色系 */
+        .btn-history {
+            background-color: #b39f89;
+            border-radius: 12px;
+            box-shadow: 0 4px 0px #82715e, 0 6px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .btn-history:hover {
+            background-color: #c2b09b;
+        }
+
+        .btn-history:active {
+            box-shadow: 0 1px 0px #82715e, 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(3px);
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-  <h1>填寫工作日誌</h1>
-  <form id="logForm">
-    姓名：<input type="text" id="name" required><br>
-    日期：<input type="date" id="date" required><br>
-    工作內容：<textarea id="content" rows="5" required></textarea><br>
-    <button type="submit">送出</button>
-  </form>
-  <div id="responseMsg"></div>
 
-  <script>
-    document.getElementById('logForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+<div class="container">
+    <h2>📝 工作日誌填報</h2>
+    <form id="logForm">
+        <!-- 第一欄：填寫日期 -->
+        <div class="form-group">
+            <label for="date">填寫日期</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+        
+        <!-- 第二欄：工作項目 -->
+        <div class="form-group">
+            <label for="item">工作項目</label>
+            <input type="text" id="item" name="item" placeholder="請輸入今日主要工作內容" required>
+        </div>
+        
+        <!-- 第三欄：執行進度/備註 -->
+        <div class="form-group">
+            <label for="status">執行進度 / 備註</label>
+            <textarea id="status" name="status" placeholder="請輸入目前進度或相關備註項目"></textarea>
+        </div>
 
-      const data = {
-        name: document.getElementById('name').value,
-        date: document.getElementById('date').value,
-        content: document.getElementById('content').value
-      };
+        <!-- 新增欄位：上傳相片 -->
+        <div class="form-group">
+            <label for="photo">上傳相片 (功能研發中)</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+        </div>
+        
+        <!-- 送出按鈕 -->
+        <button type="submit" class="btn btn-submit" id="submitBtn">確認送出日誌</button>
+        
+        <!-- 新增按鈕：調閱之前資料 -->
+        <a href="https://docs.google.com/spreadsheets/d/1Dmgd9YAEBKb_q_UAwhTLo9Lb5oz-NIxh3Scj2ES62aY/edit?gid=0#gid=0" target="_blank" class="btn btn-history">🔍 調閱之前資料 (開啟雲端試算表)</a>
+    </form>
+    <div id="statusMessage"></div>
+</div>
 
-      fetch("https://script.google.com/macros/s/AKfycbzX3i4fQxJYmP07o2fiSNVNSmiiL88EBR_XxEi7rUn5ggqGs1ZTGlSprDi2cGh4_AHOHA/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("伺服器回應錯誤：" + res.status);
-        }
-        return res.json();
-      })
-      .then(response => {
-        document.getElementById('responseMsg').textContent = "✅ 送出成功：" + JSON.stringify(response);
-      })
-      .catch(error => {
-        document.getElementById('responseMsg').textContent = "❌ 發生錯誤：" + error.message;
-      });
+<script>
+    // 自動將日期欄位帶入今天
+    document.getElementById('date').valueAsDate = new Date();
+
+    // 處理表單送出動作
+    document.getElementById('logForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        var submitBtn = document.getElementById('submitBtn');
+        var statusMessage = document.getElementById('statusMessage');
+        
+        // 切換到大地色讀取狀態
+        submitBtn.classList.add('loading');
+        submitBtn.innerText = '正在傳送日誌...';
+        statusMessage.innerText = '';
+        
+        var formData = new FormData(this);
+        var urlParams = new URLSearchParams(formData).toString();
+        
+        var scriptUrl = 'https://script.google.com/macros/s/AKfycbztGdCNWm5edZnTvMP4kvA0mDVvvyWhBkS3CIGytPCz_WLH7g8BoxMAq524jO7ylHCUJw/exec';
+        
+        fetch(scriptUrl + '?' + urlParams, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === 'success') {
+                statusMessage.style.color = '#3e6b48';
+                statusMessage.innerText = '✅ 成功寫入日誌！';
+                document.getElementById('item').value = '';
+                document.getElementById('status').value = '';
+                document.getElementById('photo').value = ''; // 清空檔案選擇
+            } else {
+                statusMessage.style.color = '#a63a3a';
+                statusMessage.innerText = '❌ 寫入失敗：' + data.error;
+            }
+        })
+        .catch(error => {
+            statusMessage.style.color = '#a63a3a';
+            statusMessage.innerText = '❌ 連線發生錯誤，請稍後再試。';
+        })
+        .finally(() => {
+            // 恢復按鈕狀態
+            submitBtn.classList.remove('loading');
+            submitBtn.innerText = '確認送出日誌';
+        });
     });
-  </script>
+</script>
+
 </body>
 </html>
