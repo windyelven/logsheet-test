@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大地質感工作日誌系統</title>
+    <title>企業級安全工作日誌系統</title>
     <style>
         body {
             font-family: "Microsoft JhengHei", Arial, sans-serif;
@@ -17,7 +17,6 @@
             box-sizing: border-box;
         }
 
-        /* 80% 透明度玻璃面板 */
         .container {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -32,139 +31,63 @@
             margin-bottom: 25px;
         }
 
-        h2 {
-            margin-top: 0;
-            color: #5c4a3c;
-            text-align: center;
-            font-size: 22px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #6e5a4b;
-            font-size: 14px;
-        }
-
+        h2 { margin-top: 0; color: #5c4a3c; text-align: center; font-size: 22px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #6e5a4b; font-size: 14px; }
+        
         input[type="date"], input[type="text"], textarea, input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d3c2b0;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #4a3c31;
+            width: 100%; padding: 10px; border: 1px solid #d3c2b0;
+            background: rgba(255, 255, 255, 0.9); border-radius: 8px;
+            box-sizing: border-box; font-size: 14px; color: #4a3c31;
         }
-
         textarea { resize: vertical; height: 80px; }
 
-        /* 50% 肉感按鈕 */
         .btn {
-            width: 100%;
+            width: 100%; padding: 12px; color: white; border: none; font-size: 16px;
+            cursor: pointer; font-weight: bold; border-radius: 12px; transition: all 0.1s ease;
+            box-sizing: border-box; display: block; text-align: center; text-decoration: none;
+        }
+        .btn-submit { background-color: #8c7355; box-shadow: 0 6px 0px #5c4a3c, 0 8px 15px rgba(0, 0, 0, 0.15); }
+        .btn-submit:active { box-shadow: 0 2px 0px #5c4a3c; transform: translateY(4px); }
+        .btn-submit.loading { background-color: #bfae99 !important; box-shadow: 0 2px 0px #8c7355 !important; transform: translateY(4px); cursor: not-allowed; }
+
+        .btn-refresh { background-color: #b39f89; box-shadow: 0 4px 0px #82715e; font-size: 14px; padding: 8px; margin-bottom: 15px; width: auto; display: inline-block; }
+
+        /* 登入提示區樣式 */
+        .login-box {
+            background: rgba(243, 230, 213, 0.9);
+            border-left: 5px solid #8c7355;
             padding: 12px;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 12px;
-            transition: all 0.1s ease;
-            box-sizing: border-box;
-            display: block;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        .btn-submit {
-            background-color: #8c7355;
-            box-shadow: 0 6px 0px #5c4a3c, 0 8px 15px rgba(0, 0, 0, 0.15);
-        }
-        .btn-submit:active {
-            box-shadow: 0 2px 0px #5c4a3c, 0 3px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(4px);
-        }
-        .btn-submit.loading {
-            background-color: #bfae99 !important;
-            box-shadow: 0 2px 0px #8c7355 !important;
-            transform: translateY(4px);
-            cursor: not-allowed;
-        }
-
-        .btn-refresh {
-            background-color: #b39f89;
-            box-shadow: 0 4px 0px #82715e, 0 6px 10px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-            padding: 8px;
-            margin-bottom: 15px;
-            width: auto;
-            display: inline-block;
-        }
-        .btn-refresh:active {
-            box-shadow: 0 1px 0px #82715e;
-            transform: translateY(3px);
-        }
-
-        #statusMessage { margin-top: 10px; text-align: center; font-weight: bold; }
-
-        /* 【新：調閱歷史資料面板】同樣採用80%玻璃質感 */
-        .history-container {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
-            width: 100%;
-            max-width: 800px;
-            box-sizing: border-box;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background: rgba(255, 255, 255, 0.5);
             border-radius: 8px;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #d3c2b0;
+            margin-bottom: 20px;
             font-size: 14px;
-            color: #4a3c31;
-        }
-
-        th {
-            background-color: rgba(140, 115, 85, 0.2);
             color: #5c4a3c;
-            font-weight: bold;
+            text-align: center;
         }
 
-        .img-preview {
-            max-width: 60px;
-            max-height: 60px;
-            border-radius: 4px;
-            cursor: pointer;
+        .history-container {
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 20px; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
+            width: 100%; max-width: 850px; box-sizing: border-box;
         }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(255, 255, 255, 0.5); }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #d3c2b0; font-size: 13px; color: #4a3c31; }
+        th { background-color: rgba(140, 115, 85, 0.2); color: #5c4a3c; font-weight: bold; }
+        .img-preview { max-width: 60px; max-height: 60px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📝 工作日誌填報</h2>
+    <h2>📝 工作日誌填報 (企業安全版)</h2>
+    
+    <div class="login-box">
+        🔒 系統將會自動安全地記錄您的公司 Google 帳號填報紀錄。
+    </div>
+
     <form id="logForm">
         <div class="form-group">
             <label for="date">填寫日期</label>
@@ -172,7 +95,7 @@
         </div>
         <div class="form-group">
             <label for="item">工作項目</label>
-            <input type="text" id="item" name="item" placeholder="請輸入主要工作內容" required>
+            <input type="text" id="item" name="item" placeholder="請輸入今日主要工作內容" required>
         </div>
         <div class="form-group">
             <label for="status">執行進度 / 備註</label>
@@ -187,7 +110,6 @@
     <div id="statusMessage"></div>
 </div>
 
-<!-- 【新：直接在網頁調閱歷史資料區】 -->
 <div class="history-container">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h2 style="margin: 0; text-align: left;">🔍 近期歷史日誌 (最新10筆)</h2>
@@ -197,25 +119,26 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20%;">日期</th>
-                    <th style="width: 30%;">工作項目</th>
-                    <th style="width: 35%;">進度/備註</th>
+                    <th style="width: 15%;">日期</th>
+                    <th style="width: 25%;">工作項目</th>
+                    <th style="width: 30%;">進度/備註</th>
                     <th style="width: 15%;">現場照片</th>
+                    <th style="width: 15%;">填報人員</th>
                 </tr>
             </thead>
             <tbody id="historyBody">
-                <tr><td colspan="4" style="text-align:center;">正在召喚歷史日誌中...</td></tr>
+                <tr><td colspan="5" style="text-align:center;">正在召喚歷史日誌中...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
+    // 你的專屬接收器網址
     var scriptUrl = 'https://script.google.com/macros/s/AKfycbztGdCNWm5edZnTvMP4kvA0mDVvvyWhBkS3CIGytPCz_WLH7g8BoxMAq524jO7ylHCUJw/exec';
 
     document.getElementById('date').valueAsDate = new Date();
 
-    // 載入歷史紀錄的魔法
     function loadHistory() {
         var tbody = document.getElementById('historyBody');
         fetch(scriptUrl)
@@ -223,38 +146,39 @@
         .then(data => {
             tbody.innerHTML = '';
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">目前尚無紀錄</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前尚無紀錄</td></tr>';
                 return;
             }
             data.forEach(row => {
                 var tr = document.createElement('tr');
                 var imgHtml = row.photo ? `<a href="${row.photo}" target="_blank"><img class="img-preview" src="${row.photo}" title="點擊看大圖"></a>` : '無照片';
+                // 截取Email前段或直接顯示
+                var shortUser = row.user.split('@')[0];
                 tr.innerHTML = `
                     <td>${row.date}</td>
                     <td>${row.item}</td>
                     <td>${row.status.replace(/\n/g, '<br>')}</td>
                     <td>${imgHtml}</td>
+                    <td title="${row.user}">${shortUser}</td>
                 `;
                 tbody.appendChild(tr);
             });
         })
         .catch(err => {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">讀取歷史資料失敗，請確認 Apps Script 部署版本</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">讀取資料中，請按送出或重新整理...</td></tr>';
         });
     }
 
-    // 網頁開啟時自動載入，以及點擊按鈕手動重新整理
     window.addEventListener('load', loadHistory);
     document.getElementById('refreshBtn').addEventListener('click', loadHistory);
 
-    // 送出日誌與相片的魔法
     document.getElementById('logForm').addEventListener('submit', function(e) {
         e.preventDefault();
         var submitBtn = document.getElementById('submitBtn');
         var statusMessage = document.getElementById('statusMessage');
         
         submitBtn.classList.add('loading');
-        submitBtn.innerText = '正在傳送日誌與相片...';
+        submitBtn.innerText = '正在安全驗證並傳送...';
         statusMessage.innerText = '';
         
         var dateVal = document.getElementById('date').value;
@@ -267,7 +191,6 @@
         bodyParams.append('item', itemVal);
         bodyParams.append('status', statusVal);
 
-        // 如果有選照片，轉成二進位文字包裝傳送
         if (fileInput.files.length > 0) {
             var file = fileInput.files[0];
             var reader = new FileReader();
@@ -286,6 +209,7 @@
         var submitBtn = document.getElementById('submitBtn');
         var statusMessage = document.getElementById('statusMessage');
         
+        // 企業安全版：利用 Google 權限轉發，如果使用者未在瀏覽器登入公司 Google，會自動彈出登入
         fetch(scriptUrl, {
             method: 'POST',
             body: params
@@ -294,21 +218,21 @@
         .then(data => {
             if(data.result === 'success') {
                 statusMessage.style.color = '#3e6b48';
-                statusMessage.innerText = '✅ 成功寫入並儲存相片！';
+                statusMessage.innerText = '✅ 驗證成功！日誌與照片已寫入試算表！';
                 document.getElementById('item').value = '';
                 document.getElementById('status').value = '';
                 document.getElementById('photo').value = '';
-                loadHistory(); // 成功後自動更新底下表格！
+                loadHistory();
             } else {
                 statusMessage.style.color = '#a63a3a';
                 statusMessage.innerText = '❌ 失敗：' + data.error;
             }
         })
         .catch(error => {
-            statusMessage.style.color = '#a63a3a';
-            statusMessage.innerText = '❌ 連線錯誤，請確認Apps Script權限。';
-        })
-        .finally(() => {
+            // 當需要 Google 登入驗證時，引導使用者開啟驗證管道
+            window.open(scriptUrl, '_blank');
+            statusMessage.style.color = '#b87333';
+            statusMessage.innerText = '🔒 請在彈出的視窗中點擊「允許」進行公司帳號驗證，完成後即可正常送出！';
             submitBtn.classList.remove('loading');
             submitBtn.innerText = '確認送出日誌';
         });
