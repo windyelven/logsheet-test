@@ -49,11 +49,7 @@
         }
         .btn-submit { background-color: #8c7355; box-shadow: 0 6px 0px #5c4a3c, 0 8px 15px rgba(0, 0, 0, 0.15); }
         .btn-submit:active { box-shadow: 0 2px 0px #5c4a3c; transform: translateY(4px); }
-        .btn-submit.loading { background-color: #bfae99 !important; box-shadow: 0 2px 0px #8c7355 !important; transform: translateY(4px); cursor: not-allowed; }
 
-        .btn-refresh { background-color: #b39f89; box-shadow: 0 4px 0px #82715e; font-size: 14px; padding: 8px; margin-bottom: 15px; width: auto; display: inline-block; }
-
-        /* 登入提示區樣式 */
         .login-box {
             background: rgba(243, 230, 213, 0.9);
             border-left: 5px solid #8c7355;
@@ -64,19 +60,13 @@
             color: #5c4a3c;
             text-align: center;
         }
-
-        .history-container {
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 20px; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
-            width: 100%; max-width: 850px; box-sizing: border-box;
+        
+        .btn-view {
+            background-color: #b39f89;
+            box-shadow: 0 4px 0px #82715e;
+            margin-top: 10px;
         }
-
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(255, 255, 255, 0.5); }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #d3c2b0; font-size: 13px; color: #4a3c31; }
-        th { background-color: rgba(140, 115, 85, 0.2); color: #5c4a3c; font-weight: bold; }
-        .img-preview { max-width: 60px; max-height: 60px; border-radius: 4px; }
+        .btn-view:active { box-shadow: 0 1px 0px #82715e; transform: translateY(3px); }
     </style>
 </head>
 <body>
@@ -85,10 +75,10 @@
     <h2>📝 工作日誌填報 (企業安全版)</h2>
     
     <div class="login-box">
-        🔒 系統將會自動安全地記錄您的公司 Google 帳號填報紀錄。
+        🔒 系統將透過您的 Google 帳號進行安全填報與相片上傳。
     </div>
 
-    <form id="logForm">
+    <form id="logForm" method="POST" target="uploadTarget">
         <div class="form-group">
             <label for="date">填寫日期</label>
             <input type="date" id="date" name="date" required>
@@ -105,137 +95,68 @@
             <label for="photo">上傳現場相片</label>
             <input type="file" id="photo" accept="image/*">
         </div>
+        
+        <input type="hidden" id="photoData" name="photoData">
+        <input type="hidden" id="photoName" name="photoName">
+
         <button type="submit" class="btn btn-submit" id="submitBtn">確認送出日誌</button>
+        
+        <button type="button" class="btn btn-view" id="viewBtn">🔍 網頁直接調閱先前資料</button>
     </form>
-    <div id="statusMessage"></div>
 </div>
 
-<div class="history-container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin: 0; text-align: left;">🔍 近期歷史日誌 (最新10筆)</h2>
-        <button class="btn btn-refresh" id="refreshBtn">🔄 重新整理</button>
-    </div>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 15%;">日期</th>
-                    <th style="width: 25%;">工作項目</th>
-                    <th style="width: 30%;">進度/備註</th>
-                    <th style="width: 15%;">現場照片</th>
-                    <th style="width: 15%;">填報人員</th>
-                </tr>
-            </thead>
-            <tbody id="historyBody">
-                <tr><td colspan="5" style="text-align:center;">正在召喚歷史日誌中...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<iframe name="uploadTarget" id="uploadTarget" style="display:none;"></iframe>
 
 <script>
-    // 你的專屬接收器網址
     var scriptUrl = 'https://script.google.com/macros/s/AKfycbztGdCNWm5edZnTvMP4kvA0mDVvvyWhBkS3CIGytPCz_WLH7g8BoxMAq524jO7ylHCUJw/exec';
-
+    
+    // 設定表單傳送網址
+    document.getElementById('logForm').action = scriptUrl;
     document.getElementById('date').valueAsDate = new Date();
 
-    function loadHistory() {
-        var tbody = document.getElementById('historyBody');
-        fetch(scriptUrl)
-        .then(res => res.json())
-        .then(data => {
-            tbody.innerHTML = '';
-            if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前尚無紀錄</td></tr>';
-                return;
-            }
-            data.forEach(row => {
-                var tr = document.createElement('tr');
-                var imgHtml = row.photo ? `<a href="${row.photo}" target="_blank"><img class="img-preview" src="${row.photo}" title="點擊看大圖"></a>` : '無照片';
-                // 截取Email前段或直接顯示
-                var shortUser = row.user.split('@')[0];
-                tr.innerHTML = `
-                    <td>${row.date}</td>
-                    <td>${row.item}</td>
-                    <td>${row.status.replace(/\n/g, '<br>')}</td>
-                    <td>${imgHtml}</td>
-                    <td title="${row.user}">${shortUser}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(err => {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">讀取資料中，請按送出或重新整理...</td></tr>';
-        });
-    }
+    // 點擊調閱按鈕，直接打開剛才那個吐資料的乾淨安全畫面
+    document.getElementById('viewBtn').addEventListener('click', function() {
+        window.open(scriptUrl, '_blank');
+    });
 
-    window.addEventListener('load', loadHistory);
-    document.getElementById('refreshBtn').addEventListener('click', loadHistory);
-
+    // 處理送出
     document.getElementById('logForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var submitBtn = document.getElementById('submitBtn');
-        var statusMessage = document.getElementById('statusMessage');
-        
-        submitBtn.classList.add('loading');
-        submitBtn.innerText = '正在安全驗證並傳送...';
-        statusMessage.innerText = '';
-        
-        var dateVal = document.getElementById('date').value;
-        var itemVal = document.getElementById('item').value;
-        var statusVal = document.getElementById('status').value;
         var fileInput = document.getElementById('photo');
+        var submitBtn = document.getElementById('submitBtn');
         
-        var bodyParams = new URLSearchParams();
-        bodyParams.append('date', dateVal);
-        bodyParams.append('item', itemVal);
-        bodyParams.append('status', statusVal);
+        submitBtn.disabled = true;
+        submitBtn.innerText = '正在安全傳送中...';
 
         if (fileInput.files.length > 0) {
+            e.preventDefault(); // 阻擋一下，先轉檔照片
             var file = fileInput.files[0];
             var reader = new FileReader();
-            reader.onload = function(e) {
-                bodyParams.append('photoData', e.target.result);
-                bodyParams.append('photoName', file.name);
-                sendData(bodyParams);
+            reader.onload = function(evt) {
+                document.getElementById('photoData').value = evt.target.result;
+                document.getElementById('photoName').value = file.name;
+                // 轉檔完成，正式發射表單
+                document.getElementById('logForm').submit();
+                resetForm();
             };
             reader.readAsDataURL(file);
         } else {
-            sendData(bodyParams);
+            // 沒有照片直接發射
+            resetForm();
         }
     });
 
-    function sendData(params) {
-        var submitBtn = document.getElementById('submitBtn');
-        var statusMessage = document.getElementById('statusMessage');
-        
-        // 企業安全版：利用 Google 權限轉發，如果使用者未在瀏覽器登入公司 Google，會自動彈出登入
-        fetch(scriptUrl, {
-            method: 'POST',
-            body: params
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.result === 'success') {
-                statusMessage.style.color = '#3e6b48';
-                statusMessage.innerText = '✅ 驗證成功！日誌與照片已寫入試算表！';
-                document.getElementById('item').value = '';
-                document.getElementById('status').value = '';
-                document.getElementById('photo').value = '';
-                loadHistory();
-            } else {
-                statusMessage.style.color = '#a63a3a';
-                statusMessage.innerText = '❌ 失敗：' + data.error;
-            }
-        })
-        .catch(error => {
-            // 當需要 Google 登入驗證時，引導使用者開啟驗證管道
-            window.open(scriptUrl, '_blank');
-            statusMessage.style.color = '#b87333';
-            statusMessage.innerText = '🔒 請在彈出的視窗中點擊「允許」進行公司帳號驗證，完成後即可正常送出！';
-            submitBtn.classList.remove('loading');
+    function resetForm() {
+        setTimeout(function() {
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
             submitBtn.innerText = '確認送出日誌';
-        });
+            alert('📝 日誌傳送指令已發射！可點擊下方調閱按鈕確認有無成功寫入。');
+            document.getElementById('item').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('photo').value = '';
+            document.getElementById('photoData').value = '';
+            document.getElementById('photoName').value = '';
+        }, 1000);
     }
 </script>
 </body>
